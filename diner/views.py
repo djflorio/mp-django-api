@@ -1,12 +1,10 @@
-from django.shortcuts import render
-from django.http import HttpResponse, JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-from rest_framework.renderers import JSONRenderer
-from rest_framework.parsers import JSONParser
-from diner.models import MbBpm
-from diner.serializers import MbBpmSerializer
+from rest_framework import status
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from diner.models import MbBpm, Metadata
+from diner.serializers import MbBpmSerializer, MetadataSerializer
 
-@csrf_exempt
+@api_view(['GET', 'POST'])
 def mb_bpm_list(request):
     """
     List all MbBpm entries, or create a new one.
@@ -14,17 +12,16 @@ def mb_bpm_list(request):
     if request.method == 'GET':
         mb_bpms = MbBpm.objects.all()
         serializer = MbBpmSerializer(mb_bpms, many=True)
-        return JsonResponse(serializer.data, safe=False)
+        return Response(serializer.data)
 
     elif request.method == 'POST':
-        data = JSONParser().parse(request)
-        serializer = MbBpmSerializer(data=data)
+        serializer = MbBpmSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return JsonResponse(serializer.data, status=201)
-        return JsonResponse(serializer.errors, status=400)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-@csrf_exempt
+@api_view(['GET', 'PUT', 'DELETE'])
 def mb_bpm_detail(request, pk):
     """
     Retrieve, update, or delete a MbBpm
@@ -32,20 +29,61 @@ def mb_bpm_detail(request, pk):
     try:
         mb_bpm = MbBpm.objects.get(recid=pk)
     except MbBpm.DoesNotExist:
-        return HttpResponse(status=404)
+        return Response(status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'GET':
         serializer = MbBpmSerializer(mb_bpm)
-        return JsonResponse(serializer.data)
+        return Response(serializer.data)
 
     elif request.method == 'PUT':
-        data = JSONParser().parse(request)
-        serializer = MbBpmSerializer(mb_bpm, data=data)
+        serializer = MbBpmSerializer(mb_bpm, data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return JsonResponse(serializer.data)
-        return JsonResponse(serializer.errors, status=400)
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     elif request.method == 'DELETE':
         mp_bpm.delete()
-        return HttpResponse(status=204)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+@api_view(['GET', 'POST'])
+def metadata_list(request):
+    """
+    List all Metadata entries, or create a new one.
+    """
+    if request.method == 'GET':
+        metadata = Metadata.objects.all()
+        serializer = MetadataSerializer(metadata, many=True)
+        return Response(serializer.data)
+
+    elif request.method == 'POST':
+        serializer = MetadataSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET', 'PUT', 'DELETE'])
+def metadata_detail(request, pk):
+    """
+    Retrieve, update, or delete Metadata
+    """
+    try:
+        metadata = Metadata.objects.get(recid=pk)
+    except Metadata.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'GET':
+        serializer = MetadataSerializer(metadata)
+        return Response(serializer.data)
+
+    elif request.method == 'PUT':
+        serializer = MetadataSerializer(metadata, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    elif request.method == 'DELETE':
+        metadata.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
