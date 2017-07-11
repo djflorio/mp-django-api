@@ -12,7 +12,7 @@ from django.db import models
 
 class MbBpm(models.Model):
     recid = models.AutoField(db_column='RecID', primary_key=True)  # Field name made lowercase.
-    value = models.CharField(max_length=62)
+    value = models.CharField(max_length=62, blank=True, null=True)
     parent_id = models.IntegerField()
 
     class Meta:
