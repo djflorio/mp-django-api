@@ -5,7 +5,7 @@ from diner.models import MbBpm, Metadata
 from diner.serializers import MbBpmSerializer, MetadataSerializer
 
 @api_view(['GET', 'POST'])
-def mb_bpm_list(request):
+def mb_bpm_list(request, format=None):
     """
     List all MbBpm entries, or create a new one.
     """
@@ -22,7 +22,7 @@ def mb_bpm_list(request):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['GET', 'PUT', 'DELETE'])
-def mb_bpm_detail(request, pk):
+def mb_bpm_detail(request, pk, format=None):
     """
     Retrieve, update, or delete a MbBpm
     """
@@ -47,7 +47,7 @@ def mb_bpm_detail(request, pk):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 @api_view(['GET', 'POST'])
-def metadata_list(request):
+def metadata_list(request, format=None):
     """
     List all Metadata entries, or create a new one.
     """
@@ -64,7 +64,7 @@ def metadata_list(request):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['GET', 'PUT', 'DELETE'])
-def metadata_detail(request, pk):
+def metadata_detail(request, pk, format=None):
     """
     Retrieve, update, or delete Metadata
     """

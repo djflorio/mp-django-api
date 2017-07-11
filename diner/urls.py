@@ -1,4 +1,5 @@
 from django.conf.urls import url
+from rest_framework.urlpatterns import format_suffix_patterns
 from diner import views
 
 urlpatterns = [
@@ -7,3 +8,5 @@ urlpatterns = [
     url(r'^metadata/$', views.metadata_list),
     url(r'^metadata/(?P<pk>[0-9]+)/$', views.metadata_detail),
 ]
+
+urlpatterns = format_suffix_patterns(urlpatterns)
